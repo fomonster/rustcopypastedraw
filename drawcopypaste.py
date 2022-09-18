@@ -11,18 +11,29 @@ backgroundImageNetColor = (89, 123, 160)
 backgroundImageNetSize = 20
 elementFillColor = (67, 101, 138)
 elementLineColor = (200, 200, 200)
+elementScale = 0.8
 structureImageScale = 30.0
 minImageWidth = 300
-maxImageWidth = 1024
-minImageHeight = 300
-maxImageHeight = 768
+maxImageWidth = 512
+minImageHeight = 200
+maxImageHeight = 300
 
 drawElementsTable = {
     "foundation.prefab": [0, 8, 1, -1.5, -1.5, 1.5, -1.5, 1.5, 1.5, -1.5, 1.5],
     "foundation.triangle.prefab": [0, 6, 1, -1.5, 0, 1.5, 0, 0, 2.62],
+    "floor.triangle.frame.prefab" : [0, 6, 1, -1.5, 0, 1.5, 0, 0, 2.62],
+    "floor.frame.prefab" : [0, 8, 1, -1.5, -1.5, 1.5, -1.5, 1.5, 1.5, -1.5, 1.5],
     "wall.prefab": [1, 4, 5, 0, -1.5, 0, 1.5],
+    "wall.frame.prefab":  [1, 4, 5, 0, -1.5, 0, -1.2,
+                            1, 4, 5, 0, 1.2, 0, 1.5],
     "wall.doorway.prefab": [1, 4, 5, 0, -1.5, 0, -0.7,
                             1, 4, 5, 0, 0.7, 0, 1.5],
+    "wall.external.high.wood.prefab": [1, 4, 2, -3, 0, 3, 0,
+                                       1, 4, 2, -3, 0.5, 3, 0.5,
+                                       1, 4, 2, -3, -0.5, 3, -0.5,],
+    "wall.external.high.stone.prefab": [1, 4, 2, -3, 0, 3, 0,
+                                       1, 4, 2, -3, 0.5, 3, 0.5,
+                                       1, 4, 2, -3, -0.5, 3, -0.5,],
 }
 
 class Vector(object):
@@ -149,6 +160,12 @@ class StructureDrawer(object):
             self.width = maxImageWidth
         if self.height > maxImageHeight:
             self.height = maxImageHeight
+        scaleX = (self.width / structureImageScale) / size.x
+        scaleY = (self.height / structureImageScale) / size.z
+        if scaleX < scaleY:
+            self.scale = scaleX * elementScale
+        else:
+            self.scale = scaleY * elementScale
         self.pivotX = self.width * 0.5
         self.pivotY = self.height * 0.5
         self.image = Image.new('RGB', (self.width, self.height), color = backgroundImageColor)
@@ -178,6 +195,7 @@ class StructureDrawer(object):
                 j = 0
                 while j < count:
                     pp = Vector(dl[i + 3 + j], 0.0, dl[i + 4 + j]).rotate(e.rotationMatix) + ep
+                    pp = Vector(pp.x * self.scale , pp.y, pp.z * self.scale) #+ ep.y * 0.1
                     ip = self.toImageCoords(pp)
                     xy.append(ip)
                     j += 2
