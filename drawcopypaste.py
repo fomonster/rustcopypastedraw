@@ -218,4 +218,11 @@ for e in loader.elements:
 drawer = StructureDrawer(loader)
 drawer.drawBackground()
 drawer.drawElements()
-drawer.save("new.png")
+
+outFilename = os.path.basename(sys.argv[1])
+outFilename = outFilename.rsplit('.', 1)[0] + ".png"
+if len(sys.argv) > 2:
+    outFilename = sys.argv[2]
+
+print(outFilename)
+drawer.save(outFilename)
